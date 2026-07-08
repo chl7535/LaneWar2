@@ -1,0 +1,16 @@
+{
+    "name": "LaneWar2.View",
+    "rootNamespace": "LaneWar2.View",
+    "references": [
+        "LaneWar2.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
