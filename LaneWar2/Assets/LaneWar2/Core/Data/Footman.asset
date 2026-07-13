@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 415510cae7d2dee4997f5347167b5069, type: 3}
   m_Name: Footman
   m_EditorClassIdentifier: LaneWar2.Core::LaneWar2.Core.Data.UnitDefinition
-  id: 
-  displayName: 
-  maxHp: 0
-  attackDamage: 0
-  attackInterval: 0
-  moveSpeed: 0
-  attackRange: 0
+  id: footman
+  displayName: "\uD48B\uB9E8"
+  maxHp: 100
+  attackDamage: 10
+  attackInterval: 1
+  moveSpeed: 2
+  attackRange: 1.5

@@ -11,6 +11,10 @@ namespace LaneWar2.Core.Units
         public readonly int OwnerId;
         public readonly UnitDefinition Def;
 
+        // 스폰 시점에 원본 def + 강화 보너스를 합산해 확정한 값. def 자체는 건드리지 않는다.
+        public readonly int EffectiveMaxHp;
+        public readonly int EffectiveAttackDamage;
+
         public int CurrentHp;
         public float PosX;
         public float PosY;
@@ -18,12 +22,14 @@ namespace LaneWar2.Core.Units
 
         public bool IsAlive => CurrentHp > 0;
 
-        public Unit(int id, int ownerId, UnitDefinition def, float posX, float posY)
+        public Unit(int id, int ownerId, UnitDefinition def, float posX, float posY, int effectiveMaxHp, int effectiveAttackDamage)
         {
             Id = id;
             OwnerId = ownerId;
             Def = def;
-            CurrentHp = def.MaxHp;
+            EffectiveMaxHp = effectiveMaxHp;
+            EffectiveAttackDamage = effectiveAttackDamage;
+            CurrentHp = effectiveMaxHp;
             PosX = posX;
             PosY = posY;
         }

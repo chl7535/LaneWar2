@@ -1,4 +1,5 @@
 using LaneWar2.Core.Data;
+using LaneWar2.Core.Tech;
 using LaneWar2.Core.Units;
 using UnityEngine;
 
@@ -30,7 +31,10 @@ namespace LaneWar2.Core.Simulation
         {
             ticksSinceLastSpawn++;
 
-            if (ticksSinceLastSpawn < spawnIntervalTicks)
+            PlayerTechState techState = ctx.GetTechState(ownerId);
+            int effectiveIntervalTicks = Mathf.Max(1, Mathf.RoundToInt(spawnIntervalTicks * techState.SpawnIntervalMultiplier));
+
+            if (ticksSinceLastSpawn < effectiveIntervalTicks)
             {
                 return;
             }
@@ -40,7 +44,11 @@ namespace LaneWar2.Core.Simulation
             int id = ctx.NextUnitId;
             ctx.NextUnitId++;
 
-            var unit = new Unit(id, ownerId, footmanDef, spawnPosX, spawnPosY);
+            // 원본 def는 읽기만 하고, 강화 보너스를 합산한 값을 스폰 시점에 유닛에 고정한다.
+            int effectiveMaxHp = footmanDef.MaxHp + techState.BonusHp;
+            int effectiveAttackDamage = footmanDef.AttackDamage + techState.BonusAttack;
+
+            var unit = new Unit(id, ownerId, footmanDef, spawnPosX, spawnPosY, effectiveMaxHp, effectiveAttackDamage);
             ctx.Units.Add(unit);
 
             Debug.Log($"[Tick {ctx.CurrentTick}] Player {ownerId} 풋맨 스폰 (id={id}), 현재 유닛 수={ctx.Units.Count}");

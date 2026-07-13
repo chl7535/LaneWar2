@@ -1,5 +1,6 @@
 using LaneWar2.Core.Data;
 using LaneWar2.Core.Simulation;
+using LaneWar2.Core.Tech;
 using UnityEngine;
 
 namespace LaneWar2.View
@@ -29,6 +30,10 @@ namespace LaneWar2.View
             sim.AddSystem(new MovementSystem());
             sim.AddSystem(new CombatSystem());
             sim.AddSystem(new ResourceSystem());
+
+            // TODO(M4/UI): 지금은 UI가 없어 라인 A 업그레이드 확인용으로 P0가 400틱(20초) 이후
+            // 골드가 모이는 첫 틱에 자동 구매하도록 예약해둔다(TechSystem이 골드 부족 시 매 틱 재시도).
+            sim.AddSystem(new TechSystem(new (int tick, int ownerId)[] { (400, 0) }));
         }
 
         private void Update()

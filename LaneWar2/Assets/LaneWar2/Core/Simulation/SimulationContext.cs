@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using LaneWar2.Core.Tech;
 using LaneWar2.Core.Units;
 
 namespace LaneWar2.Core.Simulation
@@ -25,6 +26,20 @@ namespace LaneWar2.Core.Simulation
         public void AddGold(int ownerId, int amount)
         {
             Gold[ownerId] = GetGold(ownerId) + amount;
+        }
+
+        // ownerId -> 라인 A(병영 강화) 상태. 미등록 ownerId는 조회 시 기본 상태(Lv1, 보너스 없음)로 지연 생성된다.
+        public Dictionary<int, PlayerTechState> TechStates = new Dictionary<int, PlayerTechState>();
+
+        public PlayerTechState GetTechState(int ownerId)
+        {
+            if (!TechStates.TryGetValue(ownerId, out PlayerTechState state))
+            {
+                state = new PlayerTechState();
+                TechStates[ownerId] = state;
+            }
+
+            return state;
         }
     }
 

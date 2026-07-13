@@ -38,7 +38,7 @@ namespace LaneWar2.Core.Simulation
 
                 if (unit.AttackCooldown <= 0f)
                 {
-                    enemy.CurrentHp -= unit.Def.AttackDamage;
+                    enemy.CurrentHp -= unit.EffectiveAttackDamage;
                     unit.AttackCooldown = unit.Def.AttackInterval;
 
                     if (!enemy.IsAlive)
