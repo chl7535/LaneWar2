@@ -17,6 +17,9 @@ namespace LaneWar2.View
         private Simulation sim;
         private int lastLoggedTick;
 
+        // SimulationRenderer 등 View 측 컴포넌트가 시뮬 상태를 읽기 전용으로 참조하기 위한 통로.
+        public Simulation Sim => sim;
+
         private void Start()
         {
             sim = new Simulation();
