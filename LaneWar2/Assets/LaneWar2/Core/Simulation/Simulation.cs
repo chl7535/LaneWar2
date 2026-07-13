@@ -19,6 +19,9 @@ namespace LaneWar2.Core.Simulation
 
         public int CurrentTick => context.CurrentTick;
 
+        // 진입점(GameBootstrap 등)이 유닛 수, 골드 등 현재 시뮬레이션 상태를 조회하기 위한 읽기 통로.
+        public SimulationContext Context => context;
+
         public void AddSystem(ISimulationSystem system)
         {
             systems.Add(system);
