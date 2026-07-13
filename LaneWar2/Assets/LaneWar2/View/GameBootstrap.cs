@@ -15,6 +15,10 @@ namespace LaneWar2.View
         [SerializeField] private int spawnIntervalTicks = 60; // 20틱/초 기준 3초마다 스폰
         [SerializeField] private float laneHalfLength = 10f;
 
+        [SerializeField] private HeroDefinition heroDefinition;
+        [SerializeField] private UnitDefinition heroUnitDefinition; // 영웅의 이동속도/사거리/공격주기 전용(체력/공격력은 HeroDefinition 티어에서 옴)
+        [SerializeField] private HeroGrade heroStartingGrade = HeroGrade.Low;
+
         private Simulation sim;
         private int lastLoggedTick;
 
@@ -27,6 +31,10 @@ namespace LaneWar2.View
 
             sim.AddSystem(new SpawnSystem(footmanDefinition, ownerId: 0, spawnIntervalTicks, spawnPosX: -laneHalfLength, spawnPosY: 0f));
             sim.AddSystem(new SpawnSystem(footmanDefinition, ownerId: 1, spawnIntervalTicks, spawnPosX: laneHalfLength, spawnPosY: 0f));
+
+            sim.AddSystem(new HeroSpawnSystem(heroDefinition, heroUnitDefinition, heroStartingGrade, ownerId: 0, spawnPosX: -laneHalfLength, spawnPosY: 0f));
+            sim.AddSystem(new HeroSpawnSystem(heroDefinition, heroUnitDefinition, heroStartingGrade, ownerId: 1, spawnPosX: laneHalfLength, spawnPosY: 0f));
+
             sim.AddSystem(new MovementSystem());
             sim.AddSystem(new CombatSystem());
             sim.AddSystem(new ResourceSystem());

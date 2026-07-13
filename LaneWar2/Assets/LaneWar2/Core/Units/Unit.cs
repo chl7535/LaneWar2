@@ -15,6 +15,11 @@ namespace LaneWar2.Core.Units
         public readonly int EffectiveMaxHp;
         public readonly int EffectiveAttackDamage;
 
+        // 영웅 표식. 풋맨은 IsHero=false로 기존과 동일하게 동작한다.
+        public readonly bool IsHero;
+        public readonly HeroGrade HeroGrade;
+        public readonly string HeroId;
+
         public int CurrentHp;
         public float PosX;
         public float PosY;
@@ -22,13 +27,17 @@ namespace LaneWar2.Core.Units
 
         public bool IsAlive => CurrentHp > 0;
 
-        public Unit(int id, int ownerId, UnitDefinition def, float posX, float posY, int effectiveMaxHp, int effectiveAttackDamage)
+        public Unit(int id, int ownerId, UnitDefinition def, float posX, float posY, int effectiveMaxHp, int effectiveAttackDamage,
+            bool isHero = false, HeroGrade heroGrade = HeroGrade.Low, string heroId = null)
         {
             Id = id;
             OwnerId = ownerId;
             Def = def;
             EffectiveMaxHp = effectiveMaxHp;
             EffectiveAttackDamage = effectiveAttackDamage;
+            IsHero = isHero;
+            HeroGrade = heroGrade;
+            HeroId = heroId;
             CurrentHp = effectiveMaxHp;
             PosX = posX;
             PosY = posY;

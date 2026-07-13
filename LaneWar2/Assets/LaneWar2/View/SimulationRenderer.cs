@@ -12,6 +12,7 @@ namespace LaneWar2.View
     {
         [SerializeField] private GameBootstrap gameBootstrap;
         [SerializeField] private float cubeScale = 0.8f;
+        [SerializeField] private float heroCubeScaleMultiplier = 1.5f;
 
         private readonly Dictionary<int, UnitView> views = new Dictionary<int, UnitView>();
         private readonly HashSet<int> aliveIdsThisFrame = new HashSet<int>();
@@ -42,7 +43,7 @@ namespace LaneWar2.View
 
                 if (!views.TryGetValue(unit.Id, out UnitView view))
                 {
-                    view = CreateUnitView(unit.Id, unit.OwnerId);
+                    view = CreateUnitView(unit.Id, unit.OwnerId, unit.IsHero);
                     views[unit.Id] = view;
                 }
 
@@ -52,15 +53,15 @@ namespace LaneWar2.View
             RemoveStaleViews();
         }
 
-        private UnitView CreateUnitView(int unitId, int ownerId)
+        private UnitView CreateUnitView(int unitId, int ownerId, bool isHero)
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.name = $"UnitView_{unitId}";
             cube.transform.SetParent(transform);
-            cube.transform.localScale = Vector3.one * cubeScale;
+            cube.transform.localScale = Vector3.one * cubeScale * (isHero ? heroCubeScaleMultiplier : 1f);
 
             UnitView view = cube.AddComponent<UnitView>();
-            view.Init(unitId, ownerId);
+            view.Init(unitId, ownerId, isHero);
             return view;
         }
 

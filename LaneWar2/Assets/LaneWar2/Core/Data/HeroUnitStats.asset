@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 415510cae7d2dee4997f5347167b5069, type: 3}
-  m_Name: Footman
+  m_Name: HeroUnitStats
   m_EditorClassIdentifier: LaneWar2.Core::LaneWar2.Core.Data.UnitDefinition
-  id: Footman
-  displayName: "\uD48B\uB9E8"
-  maxHp: 100
-  attackDamage: 10
-  attackInterval: 1
-  moveSpeed: 2
-  attackRange: 1.5
+  id: hero_base
+  displayName: "\uC601\uC6C5\uAE30\uBCF8\uAE30"
+  maxHp: 300
+  attackDamage: 25
+  attackInterval: 0.8
+  moveSpeed: 2.2
+  attackRange: 2
