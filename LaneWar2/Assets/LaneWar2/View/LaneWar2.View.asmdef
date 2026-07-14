@@ -2,7 +2,8 @@
     "name": "LaneWar2.View",
     "rootNamespace": "LaneWar2.View",
     "references": [
-        "LaneWar2.Core"
+        "LaneWar2.Core",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

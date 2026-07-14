@@ -40,3 +40,5 @@ MonoBehaviour:
     attackDamage: 120
     unlockCost: 2000
     unlockedSkillId: ultimate_strike
+  role: 0
+  spawnCost: 30

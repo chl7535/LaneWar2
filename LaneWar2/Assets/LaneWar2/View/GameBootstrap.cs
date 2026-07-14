@@ -2,6 +2,7 @@ using LaneWar2.Core.Data;
 using LaneWar2.Core.Simulation;
 using LaneWar2.Core.Tech;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace LaneWar2.View
 {
@@ -15,11 +16,12 @@ namespace LaneWar2.View
         [SerializeField] private int spawnIntervalTicks = 60; // 20틱/초 기준 3초마다 스폰
         [SerializeField] private float laneHalfLength = 10f;
 
-        [SerializeField] private HeroDefinition heroDefinition;
-        [SerializeField] private UnitDefinition heroUnitDefinition; // 영웅의 이동속도/사거리/공격주기 전용(체력/공격력은 HeroDefinition 티어에서 옴)
-        [SerializeField] private HeroGrade heroStartingGrade = HeroGrade.Low;
+        [SerializeField] private HeroDefinition heroDefinition; // 임시 키 입력 생산 테스트용
+        [SerializeField] private UnitDefinition heroUnitDefinition; // 임시 키 입력 생산 테스트용(이동속도/사거리/공격주기 전용, 체력/공격력은 HeroDefinition 티어에서 옴)
+        [SerializeField] private HeroGrade testProductionGrade = HeroGrade.Low; // 임시 키 입력으로 생산할 등급(UI 없어 인스펙터로 지정)
 
         private Simulation sim;
+        private HeroProductionSystem heroProduction;
         private int lastLoggedTick;
 
         // SimulationRenderer 등 View 측 컴포넌트가 시뮬 상태를 읽기 전용으로 참조하기 위한 통로.
@@ -28,12 +30,10 @@ namespace LaneWar2.View
         private void Start()
         {
             sim = new Simulation();
+            heroProduction = new HeroProductionSystem();
 
             sim.AddSystem(new SpawnSystem(footmanDefinition, ownerId: 0, spawnIntervalTicks, spawnPosX: -laneHalfLength, spawnPosY: 0f));
             sim.AddSystem(new SpawnSystem(footmanDefinition, ownerId: 1, spawnIntervalTicks, spawnPosX: laneHalfLength, spawnPosY: 0f));
-
-            sim.AddSystem(new HeroSpawnSystem(heroDefinition, heroUnitDefinition, heroStartingGrade, ownerId: 0, spawnPosX: -laneHalfLength, spawnPosY: 0f));
-            sim.AddSystem(new HeroSpawnSystem(heroDefinition, heroUnitDefinition, heroStartingGrade, ownerId: 1, spawnPosX: laneHalfLength, spawnPosY: 0f));
 
             sim.AddSystem(new MovementSystem());
             sim.AddSystem(new CombatSystem());
@@ -47,11 +47,43 @@ namespace LaneWar2.View
         private void Update()
         {
             sim.Advance(Time.deltaTime);
+            HandleHeroProductionInput();
 
             if (sim.CurrentTick - lastLoggedTick >= Simulation.TickRate)
             {
                 lastLoggedTick = sim.CurrentTick;
                 LogSummary();
+            }
+        }
+
+        // 임시 테스트 입력: UI가 아직 없어 숫자 키로 영웅 생산을 트리거한다.
+        // 입력은 여기(View)에서만 읽고, Core에는 TryProduceHero 호출만 전달한다(Core는 UnityEngine.Input에 의존하지 않음).
+        private void HandleHeroProductionInput()
+        {
+            if (Keyboard.current == null)
+            {
+                return;
+            }
+
+            if (Keyboard.current.digit1Key.wasPressedThisFrame)
+            {
+                RequestHeroProduction(ownerId: 0, spawnPosX: -laneHalfLength);
+            }
+
+            if (Keyboard.current.digit2Key.wasPressedThisFrame)
+            {
+                RequestHeroProduction(ownerId: 1, spawnPosX: laneHalfLength);
+            }
+        }
+
+        private void RequestHeroProduction(int ownerId, float spawnPosX)
+        {
+            bool produced = heroProduction.TryProduceHero(sim.Context, ownerId, heroDefinition, heroUnitDefinition,
+                testProductionGrade, spawnPosX, spawnPosY: 0f);
+
+            if (!produced)
+            {
+                Debug.LogWarning($"P{ownerId} 영웅 생산 실패(골드 부족) - 보유 {sim.Context.GetGold(ownerId)}, 필요 {heroDefinition.SpawnCost}");
             }
         }
 
