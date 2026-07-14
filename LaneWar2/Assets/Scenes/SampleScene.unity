@@ -152,9 +152,15 @@ MonoBehaviour:
   footmanDefinition: {fileID: 11400000, guid: 9792886f5b710024988bfa3f2a58f686, type: 2}
   spawnIntervalTicks: 60
   laneHalfLength: 10
-  heroDefinition: {fileID: 11400000, guid: 907e5de0b6cdcc9438450906c8484795, type: 2}
-  heroUnitDefinition: {fileID: 11400000, guid: 5360d7db8db6a4842bf38d540d4fb4a4, type: 2}
-  heroStartingGrade: 0
+  heroRoster:
+  - heroDefinition: {fileID: 11400000, guid: 4a8ed4dfb12e32a48983b5facf91a271, type: 2}
+    unitDefinition: {fileID: 11400000, guid: 342d88f400474d748b4851a2081bd1ab, type: 2}
+  - heroDefinition: {fileID: 11400000, guid: 939e5492817682947bf496f8757ba3de, type: 2}
+    unitDefinition: {fileID: 11400000, guid: 99f94db62c95e344bad96be7ff5526d7, type: 2}
+  - heroDefinition: {fileID: 11400000, guid: 9abafcccae5f2af40ba8875d7fef5a73, type: 2}
+    unitDefinition: {fileID: 11400000, guid: 7b3babd0baaf1074f9896d232cb724e6, type: 2}
+  - heroDefinition: {fileID: 11400000, guid: 657b31c4841d9e048a067f55ea7482c5, type: 2}
+    unitDefinition: {fileID: 11400000, guid: 99a26b49d3a67264a858cde91b7f71bb, type: 2}
 --- !u!4 &34661672
 Transform:
   m_ObjectHideFlags: 0

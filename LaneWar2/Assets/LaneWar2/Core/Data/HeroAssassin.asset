@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e87899fca9a9be418b5bfe7eaf0130a, type: 3}
+  m_Name: HeroAssassin
+  m_EditorClassIdentifier: LaneWar2.Core::LaneWar2.Core.Data.HeroDefinition
+  id: hero_assassin
+  displayName: "\uC554\uC0B4\uC790"
+  tiers:
+  - grade: 0
+    maxHp: 70
+    attackDamage: 50
+    unlockCost: 0
+    unlockedSkillId: backstab
+  - grade: 1
+    maxHp: 100
+    attackDamage: 75
+    unlockCost: 400
+    unlockedSkillId: shadow_strike
+  role: 3
+  spawnCost: 55

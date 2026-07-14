@@ -16,9 +16,10 @@ namespace LaneWar2.View
         [SerializeField] private int spawnIntervalTicks = 60; // 20틱/초 기준 3초마다 스폰
         [SerializeField] private float laneHalfLength = 10f;
 
-        [SerializeField] private HeroDefinition heroDefinition; // 임시 키 입력 생산 테스트용
-        [SerializeField] private UnitDefinition heroUnitDefinition; // 임시 키 입력 생산 테스트용(이동속도/사거리/공격주기 전용, 체력/공격력은 HeroDefinition 티어에서 옴)
-        [SerializeField] private HeroGrade testProductionGrade = HeroGrade.Low; // 임시 키 입력으로 생산할 등급(UI 없어 인스펙터로 지정)
+        // 임시 키 입력 생산 테스트용. 인덱스 0~3 = 탱커/원딜/근딜/암살자, 숫자키 1~4에 대응.
+        [SerializeField] private HeroLoadout[] heroRoster = new HeroLoadout[4];
+
+        private const HeroGrade TestProductionGrade = HeroGrade.Low; // UI 없어 하급으로 고정 생산
 
         private Simulation sim;
         private HeroProductionSystem heroProduction;
@@ -57,6 +58,7 @@ namespace LaneWar2.View
         }
 
         // 임시 테스트 입력: UI가 아직 없어 숫자 키로 영웅 생산을 트리거한다.
+        // 1/2/3/4 = P0가 탱커/원딜/근딜/암살자 생산, Shift+1/2/3/4 = P1이 동일 역할 생산.
         // 입력은 여기(View)에서만 읽고, Core에는 TryProduceHero 호출만 전달한다(Core는 UnityEngine.Input에 의존하지 않음).
         private void HandleHeroProductionInput()
         {
@@ -65,25 +67,48 @@ namespace LaneWar2.View
                 return;
             }
 
+            bool isPlayer1 = Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed;
+
             if (Keyboard.current.digit1Key.wasPressedThisFrame)
             {
-                RequestHeroProduction(ownerId: 0, spawnPosX: -laneHalfLength);
+                RequestHeroProduction(rosterIndex: 0, isPlayer1);
             }
 
             if (Keyboard.current.digit2Key.wasPressedThisFrame)
             {
-                RequestHeroProduction(ownerId: 1, spawnPosX: laneHalfLength);
+                RequestHeroProduction(rosterIndex: 1, isPlayer1);
+            }
+
+            if (Keyboard.current.digit3Key.wasPressedThisFrame)
+            {
+                RequestHeroProduction(rosterIndex: 2, isPlayer1);
+            }
+
+            if (Keyboard.current.digit4Key.wasPressedThisFrame)
+            {
+                RequestHeroProduction(rosterIndex: 3, isPlayer1);
             }
         }
 
-        private void RequestHeroProduction(int ownerId, float spawnPosX)
+        private void RequestHeroProduction(int rosterIndex, bool isPlayer1)
         {
-            bool produced = heroProduction.TryProduceHero(sim.Context, ownerId, heroDefinition, heroUnitDefinition,
-                testProductionGrade, spawnPosX, spawnPosY: 0f);
+            HeroLoadout loadout = rosterIndex < heroRoster.Length ? heroRoster[rosterIndex] : null;
+
+            if (loadout == null || loadout.HeroDefinition == null || loadout.UnitDefinition == null)
+            {
+                Debug.LogWarning($"heroRoster[{rosterIndex}]가 인스펙터에 설정되지 않아 영웅 생산을 건너뜀");
+                return;
+            }
+
+            int ownerId = isPlayer1 ? 1 : 0;
+            float spawnPosX = isPlayer1 ? laneHalfLength : -laneHalfLength;
+
+            bool produced = heroProduction.TryProduceHero(sim.Context, ownerId, loadout.HeroDefinition, loadout.UnitDefinition,
+                TestProductionGrade, spawnPosX, spawnPosY: 0f);
 
             if (!produced)
             {
-                Debug.LogWarning($"P{ownerId} 영웅 생산 실패(골드 부족) - 보유 {sim.Context.GetGold(ownerId)}, 필요 {heroDefinition.SpawnCost}");
+                Debug.LogWarning($"P{ownerId} 영웅 '{loadout.HeroDefinition.DisplayName}' 생산 실패(골드 부족) - 보유 {sim.Context.GetGold(ownerId)}, 필요 {loadout.HeroDefinition.SpawnCost}");
             }
         }
 
