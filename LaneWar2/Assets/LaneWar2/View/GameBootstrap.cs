@@ -22,15 +22,19 @@ namespace LaneWar2.View
         // 임시 키 입력 생산 테스트용. 인덱스 0~3 = 탱커/원딜/근딜/암살자, 숫자키 1~4에 대응.
         [SerializeField] private HeroLoadout[] heroRoster = new HeroLoadout[4];
 
-        private const HeroGrade TestProductionGrade = HeroGrade.Low; // UI 없어 하급으로 고정 생산
+        private const HeroGrade TestProductionGrade = HeroGrade.Low; // UI에 등급 선택이 없어 하급으로 고정 생산
 
         private Simulation sim;
         private HeroProductionSystem heroProduction;
+        private TechSystem techSystem;
         private int lastLoggedTick;
         private bool gameOverLogged;
 
-        // SimulationRenderer 등 View 측 컴포넌트가 시뮬 상태를 읽기 전용으로 참조하기 위한 통로.
+        // SimulationRenderer, GameHudController 등 View 측 컴포넌트가 시뮬 상태를 읽기 전용으로 참조하기 위한 통로.
         public Simulation Sim => sim;
+
+        // GameHudController가 영웅 이름/비용을 표시하기 위해 읽는 통로(읽기 전용).
+        public HeroLoadout[] HeroRoster => heroRoster;
 
         private void Start()
         {
@@ -49,9 +53,8 @@ namespace LaneWar2.View
             sim.AddSystem(new ResourceSystem());
             sim.AddSystem(new VictorySystem(baseP0, baseP1));
 
-            // TODO(M4/UI): 지금은 UI가 없어 라인 A 업그레이드 확인용으로 P0가 400틱(20초) 이후
-            // 골드가 모이는 첫 틱에 자동 구매하도록 예약해둔다(TechSystem이 골드 부족 시 매 틱 재시도).
-            sim.AddSystem(new TechSystem(new (int tick, int ownerId)[] { (400, 0) }));
+            techSystem = new TechSystem();
+            sim.AddSystem(techSystem);
         }
 
         private void Update()
@@ -97,41 +100,47 @@ namespace LaneWar2.View
                 return;
             }
 
-            bool isPlayer1 = Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed;
+            int ownerId = Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed ? 1 : 0;
 
             if (Keyboard.current.digit1Key.wasPressedThisFrame)
             {
-                RequestHeroProduction(rosterIndex: 0, isPlayer1);
+                RequestHeroProduction(rosterIndex: 0, ownerId);
             }
 
             if (Keyboard.current.digit2Key.wasPressedThisFrame)
             {
-                RequestHeroProduction(rosterIndex: 1, isPlayer1);
+                RequestHeroProduction(rosterIndex: 1, ownerId);
             }
 
             if (Keyboard.current.digit3Key.wasPressedThisFrame)
             {
-                RequestHeroProduction(rosterIndex: 2, isPlayer1);
+                RequestHeroProduction(rosterIndex: 2, ownerId);
             }
 
             if (Keyboard.current.digit4Key.wasPressedThisFrame)
             {
-                RequestHeroProduction(rosterIndex: 3, isPlayer1);
+                RequestHeroProduction(rosterIndex: 3, ownerId);
             }
         }
 
-        private void RequestHeroProduction(int rosterIndex, bool isPlayer1)
+        // UI 버튼(GameHudController)과 키보드 입력이 공용으로 호출하는 영웅 생산 요청.
+        // 실제 골드 차감/유닛 생성은 heroProduction.TryProduceHero(Core API)가 전담한다.
+        public bool RequestHeroProduction(int rosterIndex, int ownerId)
         {
+            if (sim.Context.IsGameOver)
+            {
+                return false;
+            }
+
             HeroLoadout loadout = rosterIndex < heroRoster.Length ? heroRoster[rosterIndex] : null;
 
             if (loadout == null || loadout.HeroDefinition == null || loadout.UnitDefinition == null)
             {
                 Debug.LogWarning($"heroRoster[{rosterIndex}]가 인스펙터에 설정되지 않아 영웅 생산을 건너뜀");
-                return;
+                return false;
             }
 
-            int ownerId = isPlayer1 ? 1 : 0;
-            float spawnPosX = isPlayer1 ? laneHalfLength : -laneHalfLength;
+            float spawnPosX = ownerId == 1 ? laneHalfLength : -laneHalfLength;
 
             bool produced = heroProduction.TryProduceHero(sim.Context, ownerId, loadout.HeroDefinition, loadout.UnitDefinition,
                 TestProductionGrade, spawnPosX, spawnPosY: 0f);
@@ -140,6 +149,20 @@ namespace LaneWar2.View
             {
                 Debug.LogWarning($"P{ownerId} 영웅 '{loadout.HeroDefinition.DisplayName}' 생산 실패(골드 부족) - 보유 {sim.Context.GetGold(ownerId)}, 필요 {loadout.HeroDefinition.SpawnCost}");
             }
+
+            return produced;
+        }
+
+        // UI 버튼(GameHudController)이 호출하는 라인 A(병영) 업그레이드 요청.
+        // 실제 골드 차감/스탯 적용은 techSystem.TryUpgrade(Core API)가 전담한다.
+        public bool RequestTechUpgrade(int ownerId)
+        {
+            if (sim.Context.IsGameOver)
+            {
+                return false;
+            }
+
+            return techSystem.TryUpgrade(sim.Context, ownerId);
         }
 
         private void LogSummary()
