@@ -13,6 +13,7 @@ namespace LaneWar2.View
         [SerializeField] private GameBootstrap gameBootstrap;
         [SerializeField] private float cubeScale = 0.8f;
         [SerializeField] private float heroCubeScaleMultiplier = 1.5f;
+        [SerializeField] private float baseCubeAbsoluteScale = 3.0f; // 기지는 배율이 아니라 절대 스케일로 지정해 항상 큼직하게 표시
 
         private readonly Dictionary<int, UnitView> views = new Dictionary<int, UnitView>();
         private readonly HashSet<int> aliveIdsThisFrame = new HashSet<int>();
@@ -43,7 +44,7 @@ namespace LaneWar2.View
 
                 if (!views.TryGetValue(unit.Id, out UnitView view))
                 {
-                    view = CreateUnitView(unit.Id, unit.OwnerId, unit.IsHero);
+                    view = CreateUnitView(unit.Id, unit.OwnerId, unit.IsHero, unit.IsBase);
                     views[unit.Id] = view;
                 }
 
@@ -53,12 +54,14 @@ namespace LaneWar2.View
             RemoveStaleViews();
         }
 
-        private UnitView CreateUnitView(int unitId, int ownerId, bool isHero)
+        private UnitView CreateUnitView(int unitId, int ownerId, bool isHero, bool isBase)
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.name = $"UnitView_{unitId}";
             cube.transform.SetParent(transform);
-            cube.transform.localScale = Vector3.one * cubeScale * (isHero ? heroCubeScaleMultiplier : 1f);
+            cube.transform.localScale = isBase
+                ? Vector3.one * baseCubeAbsoluteScale
+                : Vector3.one * cubeScale * (isHero ? heroCubeScaleMultiplier : 1f);
 
             UnitView view = cube.AddComponent<UnitView>();
             view.Init(unitId, ownerId, isHero);

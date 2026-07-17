@@ -20,6 +20,10 @@ namespace LaneWar2.Core.Units
         public readonly HeroGrade HeroGrade;
         public readonly string HeroId;
 
+        // 기지 표식. 이동/공격 정지는 UnitDefinition(moveSpeed=0, attackDamage=0)으로 처리하고,
+        // 이 플래그는 승패 판정/렌더링 구분용 식별자로만 쓴다.
+        public readonly bool IsBase;
+
         public int CurrentHp;
         public float PosX;
         public float PosY;
@@ -28,7 +32,7 @@ namespace LaneWar2.Core.Units
         public bool IsAlive => CurrentHp > 0;
 
         public Unit(int id, int ownerId, UnitDefinition def, float posX, float posY, int effectiveMaxHp, int effectiveAttackDamage,
-            bool isHero = false, HeroGrade heroGrade = HeroGrade.Low, string heroId = null)
+            bool isHero = false, HeroGrade heroGrade = HeroGrade.Low, string heroId = null, bool isBase = false)
         {
             Id = id;
             OwnerId = ownerId;
@@ -38,6 +42,7 @@ namespace LaneWar2.Core.Units
             IsHero = isHero;
             HeroGrade = heroGrade;
             HeroId = heroId;
+            IsBase = isBase;
             CurrentHp = effectiveMaxHp;
             PosX = posX;
             PosY = posY;

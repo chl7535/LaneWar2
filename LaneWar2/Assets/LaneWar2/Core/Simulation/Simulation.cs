@@ -33,6 +33,11 @@ namespace LaneWar2.Core.Simulation
         /// </summary>
         public void Tick()
         {
+            if (context.IsGameOver)
+            {
+                return;
+            }
+
             context.CurrentTick++;
             context.DeltaTime = FixedDeltaTime;
 

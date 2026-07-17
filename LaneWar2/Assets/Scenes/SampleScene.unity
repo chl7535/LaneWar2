@@ -150,8 +150,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LaneWar2.View::LaneWar2.View.GameBootstrap
   footmanDefinition: {fileID: 11400000, guid: 9792886f5b710024988bfa3f2a58f686, type: 2}
+  baseDefinition: {fileID: 11400000, guid: 581eeaa8cf799c940abafc1a5268ac42, type: 2}
   spawnIntervalTicks: 60
   laneHalfLength: 10
+  baseBehindDistance: 3
   heroRoster:
   - heroDefinition: {fileID: 11400000, guid: 4a8ed4dfb12e32a48983b5facf91a271, type: 2}
     unitDefinition: {fileID: 11400000, guid: 342d88f400474d748b4851a2081bd1ab, type: 2}
@@ -191,6 +193,7 @@ MonoBehaviour:
   gameBootstrap: {fileID: 34661671}
   cubeScale: 0.8
   heroCubeScaleMultiplier: 1.5
+  baseCubeAbsoluteScale: 3
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

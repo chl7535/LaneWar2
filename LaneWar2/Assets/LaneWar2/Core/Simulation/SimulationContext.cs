@@ -12,6 +12,10 @@ namespace LaneWar2.Core.Simulation
         public List<Unit> Units = new List<Unit>();
         public int NextUnitId;
 
+        // VictorySystem이 기지 파괴를 감지하면 설정한다. true가 되면 Simulation.Tick()이 더 이상 진행하지 않는다.
+        public bool IsGameOver;
+        public int WinnerId = -1;
+
         // ownerId -> 보유 골드. 미등록 ownerId는 0으로 취급(지연 초기화).
         public Dictionary<int, int> Gold = new Dictionary<int, int>();
 
